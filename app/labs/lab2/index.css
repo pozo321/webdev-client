@@ -3,15 +3,13 @@
   color: white;
 } */
 
-@layer lab2-headings {
-  #wd-lab2 h3 {
-    background-color: #e0f2f1;
-    color: #00695c;
-  }
-  #wd-lab2 h2 {
-    background-color: navy;
-    color: white;
-  }
+#wd-lab2 h3 {
+  background-color: #e0f2f1;
+  color: #00695c;
+}
+#wd-lab2 h2 {
+  background-color: navy;
+  color: white;
 }
 
 p#wd-id-selector-1 {
@@ -72,7 +70,7 @@ blockquote {
 }
 
 /* #wd-ai-cascade should win: id beats class, class beats tag */
-:where(#wd-css-cascade) p {
+p {
   background-color: green;
 }
 .wd-ai-cascade {

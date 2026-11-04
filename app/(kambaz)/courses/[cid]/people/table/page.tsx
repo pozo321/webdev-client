@@ -1,20 +1,59 @@
+"use client";
+
+import { useState } from "react";
+import { useParams } from "next/navigation";
 import { FaUserCircle } from "react-icons/fa";
 import * as db from "../../../../database";
+import { useEnrollmentsStore } from "../../../../store/enrollmentsStore";
+import { emptyUser } from "../../../../account/AccountContext";
 
-export default async function PeopleTable({
-  params,
-}: {
-  params: Promise<{ cid: string }>;
-}) {
-  const { cid } = await params;
-  const { users, enrollments } = db;
+export default function PeopleTable() {
+  const { cid } = useParams();
+  const courseId = String(cid);
+  const enrollments = useEnrollmentsStore((state) => state.enrollments);
+  const enroll = useEnrollmentsStore((state) => state.enroll);
+  const [users, setUsers] = useState(db.users);
+  const [user, setUser] = useState(emptyUser);
   const enrolled = users.filter((usr) =>
     enrollments.some(
-      (enrollment) => enrollment.user === usr._id && enrollment.course === cid,
+      (enrollment) =>
+        enrollment.user === usr._id && enrollment.course === courseId,
     ),
   );
+
+  const addPerson = () => {
+    const newUser = { ...user, _id: crypto.randomUUID() };
+    setUsers([...users, newUser]);
+    enroll(newUser._id, courseId);
+    setUser(emptyUser);
+  };
+
   return (
     <div id="wd-people-table" className="overflow-x-auto">
+      <div className="mb-3 flex flex-wrap items-center gap-2">
+        <input
+          placeholder="First Name"
+          id="wd-people-first-name"
+          className="rounded border border-neutral-300 px-3 py-1.5 text-sm"
+          value={user.firstName}
+          onChange={(e) => setUser({ ...user, firstName: e.target.value })}
+        />
+        <input
+          placeholder="Last Name"
+          id="wd-people-last-name"
+          className="rounded border border-neutral-300 px-3 py-1.5 text-sm"
+          value={user.lastName}
+          onChange={(e) => setUser({ ...user, lastName: e.target.value })}
+        />
+        <button
+          type="button"
+          id="wd-add-people-click"
+          className="rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
+          onClick={addPerson}
+        >
+          + People
+        </button>
+      </div>
       <table className="w-full border-collapse text-left text-sm">
         <thead>
           <tr className="border-b border-neutral-300">

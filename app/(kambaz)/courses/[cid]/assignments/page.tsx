@@ -1,17 +1,28 @@
 "use client";
 
+import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { FaPlus, FaSearch } from "react-icons/fa";
 import AssignmentItem from "./AssignmentItem";
 import { useAssignmentsStore } from "../../../store/assignmentsStore";
+import * as client from "./client";
 
 export default function Assignments() {
   const { cid } = useParams();
   const courseId = String(cid);
   const router = useRouter();
+  const setAssignments = useAssignmentsStore((state) => state.setAssignments);
   const assignments = useAssignmentsStore((state) => state.assignments).filter(
     (assignment) => assignment.course === courseId,
   );
+
+  useEffect(() => {
+    const fetchAssignments = async () => {
+      setAssignments(await client.findAssignmentsForCourse(courseId));
+    };
+    fetchAssignments();
+  }, [courseId, setAssignments]);
+
   return (
     <div id="wd-assignments">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">

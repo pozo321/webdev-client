@@ -6,7 +6,7 @@ import { FaAlignJustify } from "react-icons/fa6";
 import CourseNavigation from "./Navigation";
 import Breadcrumb from "./Breadcrumb";
 import { useCoursesStore } from "../../store/coursesStore";
-import { useEnrollmentsStore } from "../../store/enrollmentsStore";
+import * as client from "../client";
 import { useAccountContext } from "../../account/AccountContext";
 
 export default function CoursesLayout({
@@ -17,22 +17,32 @@ export default function CoursesLayout({
   const { cid } = useParams();
   const courseId = typeof cid === "string" ? cid : "";
   const courses = useCoursesStore((state) => state.courses);
+  const setCourses = useCoursesStore((state) => state.setCourses);
   const course = courses.find((c) => c._id === courseId);
   const [showCourseNav, setShowCourseNav] = useState(true);
   const { currentUser } = useAccountContext();
-  const enrollments = useEnrollmentsStore((state) => state.enrollments);
   const router = useRouter();
 
   useEffect(() => {
+    const fetchCourses = async () => {
+      setCourses(await client.fetchAllCourses());
+    };
+    fetchCourses();
+  }, [setCourses]);
+
+  useEffect(() => {
     if (!currentUser) return;
-    const enrolled = enrollments.some(
-      (enrollment) =>
-        enrollment.user === currentUser._id && enrollment.course === courseId,
-    );
-    if (!enrolled) {
-      router.push("/dashboard");
-    }
-  }, [currentUser, enrollments, courseId, router]);
+    const checkEnrollment = async () => {
+      const myCourses = await client.findMyCourses();
+      const enrolled = myCourses.some(
+        (c: { _id: string }) => c._id === courseId,
+      );
+      if (!enrolled) {
+        router.push("/dashboard");
+      }
+    };
+    checkEnrollment();
+  }, [currentUser, courseId, router]);
 
   return (
     <div id="wd-courses">

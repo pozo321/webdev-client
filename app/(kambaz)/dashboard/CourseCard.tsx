@@ -1,25 +1,24 @@
 import Link from "next/link";
 import Image from "next/image";
-import { useCoursesStore, type Course } from "../store/coursesStore";
-import { useEnrollmentsStore } from "../store/enrollmentsStore";
+import { type Course } from "../store/coursesStore";
 import { useAccountContext } from "../account/AccountContext";
 
 export default function CourseCard({
   course,
+  enrolled,
   onEdit,
+  onDelete,
+  onEnroll,
+  onUnenroll,
 }: {
   course: Course;
+  enrolled: boolean;
   onEdit: () => void;
+  onDelete: () => void;
+  onEnroll: () => void;
+  onUnenroll: () => void;
 }) {
-  const deleteCourse = useCoursesStore((state) => state.deleteCourse);
   const { currentUser } = useAccountContext();
-  const enrollments = useEnrollmentsStore((state) => state.enrollments);
-  const enroll = useEnrollmentsStore((state) => state.enroll);
-  const unenroll = useEnrollmentsStore((state) => state.unenroll);
-  const enrolled = enrollments.some(
-    (enrollment) =>
-      enrollment.user === currentUser?._id && enrollment.course === course._id,
-  );
   return (
     <div className="wd-dashboard-course w-[300px] max-w-full overflow-hidden rounded-lg border border-neutral-200 bg-white shadow-sm">
       <Link
@@ -63,7 +62,7 @@ export default function CourseCard({
             className="ms-2 inline-flex items-center justify-center rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
             onClick={(event) => {
               event.preventDefault();
-              deleteCourse(course._id);
+              onDelete();
             }}
           >
             Delete
@@ -76,7 +75,7 @@ export default function CourseCard({
                 className="ms-2 mt-2 inline-flex items-center justify-center rounded bg-red-600 px-3 py-1.5 text-sm font-medium text-white"
                 onClick={(event) => {
                   event.preventDefault();
-                  unenroll(currentUser._id, course._id);
+                  onUnenroll();
                 }}
               >
                 Unenroll
@@ -88,7 +87,7 @@ export default function CourseCard({
                 className="ms-2 mt-2 inline-flex items-center justify-center rounded bg-green-600 px-3 py-1.5 text-sm font-medium text-white"
                 onClick={(event) => {
                   event.preventDefault();
-                  enroll(currentUser._id, course._id);
+                  onEnroll();
                 }}
               >
                 Enroll

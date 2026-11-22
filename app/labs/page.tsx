@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { httpServer } from "@/app/lib/httpServer";
 
 export default function Labs() {
   return (
@@ -8,6 +9,14 @@ export default function Labs() {
       <br />
       <a href="https://github.com/pozo321/webdev-client" id="wd-github">
         GitHub Repository
+      </a>
+      <br />
+      <a href="https://github.com/pozo321/webdev-server" id="wd-server-github">
+        Node server repo
+      </a>
+      <br />
+      <a href={httpServer()} id="wd-server-root">
+        Deployed server root
       </a>
       <ul>
         <li>

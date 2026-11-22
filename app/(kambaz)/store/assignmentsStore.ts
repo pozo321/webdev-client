@@ -16,6 +16,7 @@ export type Assignment = {
 
 type AssignmentsStore = {
   assignments: Assignment[];
+  setAssignments: (assignments: Assignment[]) => void;
   addAssignment: (assignment: Assignment) => void;
   deleteAssignment: (assignmentId: string) => void;
   updateAssignment: (assignment: Assignment) => void;
@@ -23,6 +24,7 @@ type AssignmentsStore = {
 
 export const useAssignmentsStore = create<AssignmentsStore>((set) => ({
   assignments: assignmentsJson as Assignment[],
+  setAssignments: (assignments) => set({ assignments }),
   addAssignment: (assignment) =>
     set((state) => ({
       assignments: [

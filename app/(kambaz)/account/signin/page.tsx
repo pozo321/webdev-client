@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import * as db from "../../database";
 import { useAccountContext } from "../AccountContext";
+import * as client from "../client";
 
 export default function Signin() {
   const [credentials, setCredentials] = useState({
@@ -14,15 +14,16 @@ export default function Signin() {
   const { setCurrentUser } = useAccountContext();
   const router = useRouter();
 
-  const signin = () => {
-    const user = db.users.find(
-      (u) =>
-        u.username === credentials.username &&
-        u.password === credentials.password,
-    );
-    if (!user) return;
-    setCurrentUser(user);
-    router.push("/dashboard");
+  const [error, setError] = useState("");
+
+  const signin = async () => {
+    try {
+      const user = await client.signin(credentials);
+      setCurrentUser(user);
+      router.push("/dashboard");
+    } catch {
+      setError("Invalid username or password");
+    }
   };
 
   return (
@@ -63,6 +64,11 @@ export default function Signin() {
       >
         Sign in
       </button>
+      {error && (
+        <div id="wd-signin-error" className="mb-2 text-red-600">
+          {error}
+        </div>
+      )}
       <Link href="/account/signup" id="wd-signup-link">
         Sign up
       </Link>
